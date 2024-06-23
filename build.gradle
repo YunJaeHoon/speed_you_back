@@ -1,0 +1,48 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.1'
+	id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Spring Web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// MySQL 드라이버
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Spring data JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// DTO 검증
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// 메일 서버 연결 라이브러리
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
