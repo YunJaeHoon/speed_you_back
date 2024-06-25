@@ -21,7 +21,6 @@ public class CustomUserDetails implements UserDetails {
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
         authorities.add(new GrantedAuthority() {
-
             @Override
             public String getAuthority() {
                 return profile.getRole();

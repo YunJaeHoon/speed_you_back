@@ -23,7 +23,7 @@ public class LoginController
 
     /* 회원가입 컨트롤러 */
     @PostMapping("/api/join")
-    public ResponseEntity<ResponseDto.Success> join(@Valid @RequestBody ProfileDto.join dto)
+    public ResponseEntity<ResponseDto.Success> join(@Valid @RequestBody ProfileDto.Join dto)
     {
         loginService.join(dto);
 
@@ -38,7 +38,7 @@ public class LoginController
 
     /* 이메일 인증번호 전송 컨트롤러 */
     @PostMapping("/api/join/send-email")
-    public ResponseEntity<ResponseDto.Success> sendEmail(@Valid @RequestBody EmailDto.sendEmail dto)
+    public ResponseEntity<ResponseDto.Success> sendEmail(@Valid @RequestBody EmailDto.SendEmail dto)
     {
         loginService.sendEmail(dto);
 
@@ -53,7 +53,7 @@ public class LoginController
 
     /* 이메일 인증번호 확인 컨트롤러 */
     @PostMapping("/api/join/check-email")
-    public ResponseEntity<ResponseDto.Success> checkEmail(@Valid @RequestBody EmailDto.checkEmail dto)
+    public ResponseEntity<ResponseDto.Success> checkEmail(@Valid @RequestBody EmailDto.CheckEmail dto)
     {
         loginService.checkEmail(dto);
 
@@ -68,7 +68,7 @@ public class LoginController
 
     /* 비밀번호 초기화 컨트롤러 */
     @PostMapping("/api/reset-password")
-    public ResponseEntity<ResponseDto.Success> resetPassword(@Valid @RequestBody EmailDto.sendEmail dto)
+    public ResponseEntity<ResponseDto.Success> resetPassword(@Valid @RequestBody EmailDto.SendEmail dto)
     {
         loginService.resetPassword(dto);
 
