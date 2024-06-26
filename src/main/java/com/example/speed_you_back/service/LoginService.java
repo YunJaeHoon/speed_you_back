@@ -8,10 +8,12 @@ import com.example.speed_you_back.exception.CustomErrorCode;
 import com.example.speed_you_back.exception.CustomException;
 import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.CodeRepository;
+import com.example.speed_you_back.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -35,7 +37,7 @@ public class LoginService
 
     /* 회원가입 서비스 */
     @Transactional
-    public void join(ProfileDto.join dto)
+    public void join(ProfileDto.Join dto)
     {
         // 이메일 중복 체크
         profileRepository.findByEmail(dto.getEmail())
@@ -66,7 +68,7 @@ public class LoginService
 
     /* 이메일 인증번호 전송 서비스 */
     @Transactional
-    public void sendEmail(EmailDto.sendEmail dto)
+    public void sendEmail(EmailDto.SendEmail dto)
     {
         // 이메일 중복 체크
         profileRepository.findByEmail(dto.getEmail())
@@ -118,7 +120,7 @@ public class LoginService
 
     /* 이메일 인증번호 확인 서비스 */
     @Transactional
-    public void checkEmail(EmailDto.checkEmail dto)
+    public void checkEmail(EmailDto.CheckEmail dto)
     {
         // 이메일 중복 체크
         profileRepository.findByEmail(dto.getEmail())
@@ -137,7 +139,7 @@ public class LoginService
 
     /* 비밀번호 초기화 서비스 */
     @Transactional
-    public void resetPassword(EmailDto.sendEmail dto)
+    public void resetPassword(EmailDto.SendEmail dto)
     {
         // 이메일에 해당하는 계정 존재 여부 체크
         Profile profile = profileRepository.findByEmail(dto.getEmail())

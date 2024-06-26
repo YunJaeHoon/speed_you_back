@@ -11,7 +11,7 @@ public class EmailDto
     @NoArgsConstructor
     @Getter
     @ToString
-    public static class sendEmail
+    public static class SendEmail
     {
         @NotBlank(message = "[email] cannot be blank.")
         @Email(message = "[email] should be email format.")
@@ -22,7 +22,7 @@ public class EmailDto
     @NoArgsConstructor
     @Getter
     @ToString
-    public static class checkEmail
+    public static class CheckEmail
     {
         @NotBlank(message = "[email] cannot be blank.")
         @Email(message = "[email] should be email format.")
