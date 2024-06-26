@@ -1,20 +1,19 @@
 package com.example.speed_you_back.security;
 
 import com.example.speed_you_back.entity.Profile;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@RequiredArgsConstructor
+@Getter
 public class CustomUserDetails implements UserDetails {
 
     private final Profile profile;
-
-    // 생성자
-    public CustomUserDetails(Profile profile) {
-        this.profile = profile;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

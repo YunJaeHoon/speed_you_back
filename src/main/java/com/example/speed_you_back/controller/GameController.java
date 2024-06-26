@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 public class GameController
 {
@@ -22,7 +24,7 @@ public class GameController
 
     /* 점수 등록 컨트롤러 */
     @PostMapping("/api/game/insert-score")
-    public ResponseEntity<ResponseDto.Success> insertScore(@Valid @RequestBody ScoreDto.Insert dto)
+    public ResponseEntity<ResponseDto.Success> insertScore(Principal principal, @Valid @RequestBody ScoreDto.Insert dto)
     {
         gameService.insertScore(dto);
 

@@ -47,8 +47,8 @@ logging:
           jdbc:
             bind: trace   # 쿼리의 파라미터 출력
 
-## 서버 세션 관리
-server:
-  servlet:
-    session:
-      timeout: 60m
+## JWT 설정
+jwt:
+  # Base64
+  secret: c3BlZWRfeW91X3Zlcnlfc2VjcmV0Y3JldGNyZXRjcmV0Y3JldGNyZXRjcmV0Y3JldGNyZXRjcmV0Y3JldGNyZXRjcmV0Y3JldA==
+  expiration_time: 3600    # 60분

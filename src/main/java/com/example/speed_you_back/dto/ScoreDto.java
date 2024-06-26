@@ -18,8 +18,6 @@ public class ScoreDto
     @ToString
     public static class Insert
     {
-        private Long profile_id;
-
         @NotBlank(message = "[game] cannot be blank.")
         private String game;
 

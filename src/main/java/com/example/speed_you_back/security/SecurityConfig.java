@@ -1,6 +1,8 @@
 package com.example.speed_you_back.security;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +15,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig
 {
+    @Autowired JwtUtil jwtUtil;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
                                                    CustomUserDetailService customUserDetailService) throws Exception
@@ -40,6 +45,10 @@ public class SecurityConfig
                         .anyRequest().permitAll()
                 );
 
+        // UsernamePasswordAuthenticationFilter 앞에 JwtAuthFilter 추가
+        httpSecurity
+                .addFilterBefore(new JwtAuthFilter(customUserDetailService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
         // 로그인, 로그아웃 설정
         httpSecurity
                 .formLogin((login) -> login
@@ -49,17 +58,12 @@ public class SecurityConfig
                         .permitAll()
                         .loginProcessingUrl("/api/login")   // 로그인 처리 경로
                         .permitAll()
-                        .defaultSuccessUrl("/", true)   // 로그인 성공 시, 이동 경로
+                        .defaultSuccessUrl("/", true)       // 로그인 성공 시, 이동 경로
                         .successHandler(customLoginSuccessHandler())
                         .failureHandler(customLoginFailureHandler())
                 )
                 .logout((logout) -> logout
                         .logoutUrl("/api/logout")
-                        .addLogoutHandler((request, response, authentication) -> {
-                            HttpSession session = request.getSession();
-                            if (session != null)
-                                session.invalidate();
-                        })
                         .logoutSuccessHandler(customLogoutSuccessHandler())
                         .deleteCookies("remember-me")
                 )
@@ -74,15 +78,10 @@ public class SecurityConfig
                         .userDetailsService(customUserDetailService)
                 );
 
-        // 세션 설정
+        // 세션 생성 및 사용 정지
         httpSecurity
                 .sessionManagement((session) -> session
-                        .sessionFixation().changeSessionId()                            // 로그인 시, 기존 세션 무효화
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)       // 필요시에 세션을 생성
-                        .maximumSessions(1)                                             // 1명만 로그인 가능
-                        .maxSessionsPreventsLogin(false)                                // 다른 기기 로그인 시 기존 사용자 세션 만료
-                        .sessionRegistry(sessionRegistry())                             // 동시에 로그인한 세션들 추적
-                        .expiredSessionStrategy(customSessionExpiredStrategy())         // 만료된 세션으로 요청 시, 처리
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
         return httpSecurity.build();
@@ -101,16 +100,6 @@ public class SecurityConfig
     @Bean
     public CustomLogoutSuccessHandler customLogoutSuccessHandler() {
         return new CustomLogoutSuccessHandler();
-    }
-
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
-
-    @Bean
-    public CustomSessionExpiredStrategy customSessionExpiredStrategy() {
-        return new CustomSessionExpiredStrategy();
     }
 
     // 세션 생성, 만료 이벤트 리스너
