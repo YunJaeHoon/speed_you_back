@@ -32,6 +32,9 @@ public class ScoreDto
     @ToString
     public static class Result
     {
+        @NotNull(message = "[count_all] cannot be null.")
+        private Long count_all;
+
         @NotNull(message = "[rank] cannot be null.")
         private Long rank;
 

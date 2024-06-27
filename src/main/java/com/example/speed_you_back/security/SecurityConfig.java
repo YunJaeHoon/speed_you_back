@@ -1,19 +1,16 @@
 package com.example.speed_you_back.security;
 
-import jakarta.servlet.http.HttpSession;
-import lombok.AllArgsConstructor;
+import com.example.speed_you_back.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -23,6 +20,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 public class SecurityConfig
 {
     @Autowired JwtUtil jwtUtil;
+    @Autowired RedisTemplate<String, String> redisTemplate;
+    @Autowired ProfileRepository profileRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
@@ -37,28 +36,38 @@ public class SecurityConfig
         httpSecurity
                 .authorizeHttpRequests((requests) -> requests
                         // 해당 요청은 모든 사용자에게 접근 권한 허용
-                        .requestMatchers("/", "/login", "/join", "logout").permitAll()
-                        .requestMatchers("/api/login/**", "/api/join/**", "/api/logout").permitAll()
-                        // 해당 요청은 관지라에게만 접근 권한 허용
-                        .requestMatchers("/api/admin/**", "/admin").hasRole("ADMIN")
-                        // 그 외의 요청은 모든 사용자에게 허용
-                        .anyRequest().permitAll()
+                        .requestMatchers("/login/**", "/join/**", "/reset-password").permitAll()
+                        .requestMatchers("/api/login/**", "/api/join/**", "/api/reset-password").permitAll()
+                        .requestMatchers("/game/**").permitAll()
+                        .requestMatchers("/api/game/**").permitAll()
+                        // 해당 요청은 인증된 사용자에게만 접근 권한 허용
+                        .requestMatchers("/api/logout").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/get-role").hasAnyRole("ADMIN", "USER")
+                        // 해당 요청은 관리자에게만 접근 권한 허용
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 그 외의 요청은 인증된 사용자에게만 허용
+                        .anyRequest().authenticated()
+                );
+
+        // 예외 처리 설정
+        httpSecurity
+                .exceptionHandling((exception) -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint())
+                        .accessDeniedHandler(customAccessDeniedHandler())
                 );
 
         // UsernamePasswordAuthenticationFilter 앞에 JwtAuthFilter 추가
         httpSecurity
-                .addFilterBefore(new JwtAuthFilter(customUserDetailService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthFilter(customUserDetailService, jwtUtil, redisTemplate, profileRepository), UsernamePasswordAuthenticationFilter.class);
 
-        // 로그인, 로그아웃 설정
+        // 로그인, 로그아웃, 로그인 처리 서비스 설정
         httpSecurity
                 .formLogin((login) -> login
                         .usernameParameter("email")         // 아이디
                         .passwordParameter("password")      // 비밀번호
-                        .loginPage("/login")                // 로그인 페이지 경로
-                        .permitAll()
                         .loginProcessingUrl("/api/login")   // 로그인 처리 경로
                         .permitAll()
-                        .defaultSuccessUrl("/", true)       // 로그인 성공 시, 이동 경로
                         .successHandler(customLoginSuccessHandler())
                         .failureHandler(customLoginFailureHandler())
                 )
@@ -73,7 +82,7 @@ public class SecurityConfig
         httpSecurity
                 .rememberMe((rememberConfig) -> rememberConfig
                         .key("Test-Key-For-Speed_you")
-                        .tokenValiditySeconds(60 * 60 * 24 * 30)        // 30일
+                        .tokenValiditySeconds(60 * 60 * 24 * 30)    // 30일
                         .rememberMeParameter("remember-me")
                         .userDetailsService(customUserDetailService)
                 );
@@ -85,6 +94,16 @@ public class SecurityConfig
                 );
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
     }
 
     @Bean

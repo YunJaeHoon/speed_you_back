@@ -1,7 +1,6 @@
 package com.example.speed_you_back.controller;
 
 import com.example.speed_you_back.configuration.VersionProvider;
-import com.example.speed_you_back.dto.ProfileDto;
 import com.example.speed_you_back.dto.ResponseDto;
 import com.example.speed_you_back.dto.ScoreDto;
 import com.example.speed_you_back.service.GameService;
@@ -26,7 +25,7 @@ public class GameController
     @PostMapping("/api/game/insert-score")
     public ResponseEntity<ResponseDto.Success> insertScore(Principal principal, @Valid @RequestBody ScoreDto.Insert dto)
     {
-        gameService.insertScore(dto);
+        gameService.insertScore(principal, dto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.Success.builder()

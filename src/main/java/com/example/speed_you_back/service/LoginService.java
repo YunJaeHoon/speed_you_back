@@ -8,12 +8,10 @@ import com.example.speed_you_back.exception.CustomErrorCode;
 import com.example.speed_you_back.exception.CustomException;
 import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.CodeRepository;
-import com.example.speed_you_back.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -179,19 +177,17 @@ public class LoginService
         }
     }
 
-    /* 로그인 여부 확인 서비스 */
-    public boolean isLogin(Principal principal)
+    /* 계정 권한 확인 서비스 */
+    public String getRole(Principal principal)
     {
-        // 로그인을 하지 않은 사용자는 false 반환
-        if(principal == null)
-            return false;
-
-        // 로그인 여부 확인 요청을 보낸 사용자의 계정 이메일
+        // 계정 권한 확인 요청을 보낸 사용자의 계정 이메일
         String email = principal.getName();
 
-        // 해당 사용자의 계정이 존재하는지 확인한 뒤, 해당 여부를 반환
-        Optional<Profile> profile = profileRepository.findByEmail(email);
+        // 해당 사용자의 계정이 존재하는지 확인
+        Profile profile = profileRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.ACCOUNT_NOT_FOUND, null));
 
-        return profile.isPresent();
+        // 계정이 존재한다면 role 반환
+        return profile.getRole();
     }
 }

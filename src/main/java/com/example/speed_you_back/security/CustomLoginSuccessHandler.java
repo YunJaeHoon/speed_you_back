@@ -11,19 +11,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
 {
     @Autowired JwtUtil jwtUtil;
+    @Autowired RedisTemplate<String, String> redisTemplate;
     @Autowired ProfileRepository profileRepository;
     @Autowired VersionProvider versionProvider;
 
@@ -46,7 +45,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
                 .role(profile.getRole())
                 .build();
 
+        // access token 발행
         String accessToken = jwtUtil.createAccessToken(profileDto);
+
+        // redis에 token 정보 저장
+        redisTemplate.opsForValue().set(email, accessToken);
 
         ResponseDto.Success dto = ResponseDto.Success.builder()
                 .data(accessToken)
