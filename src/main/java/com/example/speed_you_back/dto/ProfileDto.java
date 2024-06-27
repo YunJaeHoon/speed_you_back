@@ -38,21 +38,6 @@ public class ProfileDto
 
     @AllArgsConstructor
     @NoArgsConstructor
-    @Getter
-    @Builder
-    @ToString
-    public static class Login
-    {
-        @NotBlank(message = "[email] cannot be blank.")
-        @Email(message = "[email] should be email format.")
-        private String email;
-
-        @NotBlank(message = "[password] cannot be blank.")
-        private String password;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
     @ToString
     @Getter
     public static class Join

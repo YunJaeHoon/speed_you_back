@@ -81,17 +81,17 @@ public class LoginController
                 );
     }
 
-    /* 로그인 여부 확인 컨트롤러 */
-    @GetMapping("/api/is-login")
-    public ResponseEntity<ResponseDto.Success> isLogin(Principal principal)
+    /* 계정 권한 확인 컨트롤러 */
+    @GetMapping("/api/get-role")
+    public ResponseEntity<ResponseDto.Success> getRole(Principal principal)
     {
-        boolean isLoginResult = loginService.isLogin(principal);
+        String role = loginService.getRole(principal);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
                         ResponseDto.Success.builder()
-                                .data(String.valueOf(isLoginResult))
-                                .message("로그인 여부 확인이 완료되었습니다.")
+                                .data(role)
+                                .message("계정 권한 확인이 완료되었습니다.")
                                 .version(versionProvider.getVersion())
                                 .build()
                 );

@@ -21,6 +21,7 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CustomUserDetailService implements UserDetailsService
 {
     @Autowired
@@ -29,9 +30,21 @@ public class CustomUserDetailService implements UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException
     {
+        log.info(email);
+
         // profile 데이터베이스에서 해당 이메일의 계정 검색
         Profile profile = profileRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILURE, email));
+
+        // 해당 이메일의 계정이 존재하면, Spring security에서 제공하는 User 클래스를 빌드
+        return new CustomUserDetails(profile);
+    }
+
+    public UserDetails loadUserByProfileId(Long profile_id) throws UsernameNotFoundException
+    {
+        // profile 데이터베이스에서 해당 아이디의 계정 검색
+        Profile profile = profileRepository.findById(profile_id)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILURE, null));
 
         // 해당 이메일의 계정이 존재하면, Spring security에서 제공하는 User 클래스를 빌드
         return new CustomUserDetails(profile);

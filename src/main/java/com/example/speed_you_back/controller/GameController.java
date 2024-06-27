@@ -26,7 +26,7 @@ public class GameController
     @PostMapping("/api/game/insert-score")
     public ResponseEntity<ResponseDto.Success> insertScore(Principal principal, @Valid @RequestBody ScoreDto.Insert dto)
     {
-        gameService.insertScore(dto);
+        gameService.insertScore(principal, dto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.Success.builder()

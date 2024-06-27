@@ -3,7 +3,7 @@ speed_you_back:
 
 spring:
 
-  # application 기본 이름 설정
+  ## application 기본 이름 설정
   application:
     name: speed_you_back
 
@@ -37,6 +37,12 @@ spring:
           starttls:
             enable: true  # StartTLS 활성화 여부
 
+  ## Redis 설정
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
 ## JPA Log 설정
 logging:
   level:
@@ -50,5 +56,5 @@ logging:
 ## JWT 설정
 jwt:
   # Base64
-  secret: c3BlZWRfeW91X3Zlcnlfc2VjcmV0Y3JldGNyZXRjcmV0Y3JldGNyZXRjcmV0Y3JldGNyZXRjcmV0Y3JldGNyZXRjcmV0Y3JldA==
+  secret: ${JWT_SECRET}
   expiration_time: 3600    # 60분
