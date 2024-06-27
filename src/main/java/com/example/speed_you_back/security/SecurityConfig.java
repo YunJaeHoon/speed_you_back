@@ -41,6 +41,7 @@ public class SecurityConfig
                         .requestMatchers("/game/**").permitAll()
                         .requestMatchers("/api/game/**").permitAll()
                         // 해당 요청은 인증된 사용자에게만 접근 권한 허용
+                        .requestMatchers("/api/logout").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/get-role").hasAnyRole("ADMIN", "USER")
                         // 해당 요청은 관리자에게만 접근 권한 허용
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -67,7 +68,6 @@ public class SecurityConfig
                         .passwordParameter("password")      // 비밀번호
                         .loginProcessingUrl("/api/login")   // 로그인 처리 경로
                         .permitAll()
-                        .defaultSuccessUrl("/", true)       // 로그인 성공 시, 이동 경로
                         .successHandler(customLoginSuccessHandler())
                         .failureHandler(customLoginFailureHandler())
                 )

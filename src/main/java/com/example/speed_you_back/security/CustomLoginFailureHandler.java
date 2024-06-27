@@ -19,8 +19,7 @@ import java.io.IOException;
 @Component
 public class CustomLoginFailureHandler implements AuthenticationFailureHandler
 {
-    @Autowired
-    VersionProvider versionProvider;
+    @Autowired VersionProvider versionProvider;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

@@ -185,11 +185,7 @@ public class LoginService
 
         // 해당 사용자의 계정이 존재하는지 확인
         Profile profile = profileRepository.findByEmail(email)
-                .orElse(null);
-
-        // 계정이 존재하지 않으면 null 반환
-        if(profile == null)
-            return null;
+                .orElseThrow(() -> new CustomException(CustomErrorCode.ACCOUNT_NOT_FOUND, null));
 
         // 계정이 존재한다면 role 반환
         return profile.getRole();

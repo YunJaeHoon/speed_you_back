@@ -1,7 +1,6 @@
 package com.example.speed_you_back.controller;
 
 import com.example.speed_you_back.configuration.VersionProvider;
-import com.example.speed_you_back.dto.ProfileDto;
 import com.example.speed_you_back.dto.ResponseDto;
 import com.example.speed_you_back.dto.ScoreDto;
 import com.example.speed_you_back.service.GameService;
