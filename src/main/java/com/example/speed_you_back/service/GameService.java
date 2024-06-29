@@ -52,18 +52,18 @@ public class GameService
     }
 
     /* 결과 확인 서비스 */
-    public ScoreDto.Result result(ScoreDto.Insert dto)
+    public ScoreDto.Result result(String game, double score)
     {
         // 해당 게임의 모든 결과 개수
-        Long countAllScores = scoreRepository.countAllScores(dto.getGame());
+        Long countAllScores = scoreRepository.countAllScores(game);
 
         // 해당 게임에서 해당 점수보다 높은 결과 개수
-        Long countLargeScores = scoreRepository.countLargeScores(dto.getGame(), dto.getScore());
+        Long countLargeScores = scoreRepository.countLargeScores(game, score);
 
         ScoreDto.Result result = ScoreDto.Result.builder()
                 .count_all(countAllScores)
                 .rank(countLargeScores + 1)
-                .percentile(Math.round((double) (countLargeScores + 1) / countAllScores * 100.0) / 100.0)
+                .percentile(Math.round(((double) (countLargeScores + 1) / countAllScores) * 100))
                 .build();
 
         return result;
