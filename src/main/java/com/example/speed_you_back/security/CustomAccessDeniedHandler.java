@@ -25,7 +25,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler
 
         ResponseDto.Error dto = ResponseDto.Error.builder()
                 .data(null)
-                .message("권한이 없습니다.")
+                .message("권한이 부족합니다.")
                 .version(versionProvider.getVersion())
                 .build();
 

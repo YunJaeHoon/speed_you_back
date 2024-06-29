@@ -31,12 +31,12 @@ public class JwtUtil
         this.accessTokenExpTime = accessTokenExpTime;
     }
 
-    // Access Token 생성
+    // Access Token 생성 및 반환
     public String createAccessToken(ProfileDto.Profile profile) {
         return createToken(profile, accessTokenExpTime);
     }
 
-    // JWT 생성
+    // Access Token 생성 함수
     private String createToken(ProfileDto.Profile profile, long expireTime)
     {
         Claims claims = Jwts.claims();
