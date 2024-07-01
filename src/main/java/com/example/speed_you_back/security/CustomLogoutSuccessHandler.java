@@ -16,9 +16,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Objects;
 
+@Component
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
 {
     @Autowired JwtUtil jwtUtil;
@@ -31,17 +34,20 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException
     {
+        // 로그아웃 성공 여부
+        boolean isSuccess = false;
+
         String authorizationHeader = request.getHeader("Authorization");
 
-        // 헤더에 JWT token이 존재하는지 체크
+        // 헤더에 access token이 존재하는지 체크
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
         {
             String token = authorizationHeader.substring(7);
 
-            // JWT 유효성 검증
+            // access token 유효성 검증
             if(jwtUtil.validateToken(token))
             {
-                Long userId = jwtUtil.getUserId(token);
+                Long userId = jwtUtil.getProfileId(token);
 
                 Profile profile = profileRepository.findById(userId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));
@@ -49,21 +55,36 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
                 String email = profile.getEmail();
 
                 // redis에서 token 정보 삭제
-                if (redisTemplate.opsForValue().get(email) != null) {
+                if (Objects.equals(redisTemplate.opsForValue().get(email), token)) {
+                    isSuccess = true;
                     redisTemplate.delete(email);
                 }
             }
         }
 
-        ResponseDto.Success dto = ResponseDto.Success.builder()
-                .data(null)
-                .message("로그아웃을 성공하였습니다.")
-                .version(versionProvider.getVersion())
-                .build();
+        if(isSuccess) {
+            ResponseDto.Success dto = ResponseDto.Success.builder()
+                    .data(null)
+                    .message("로그아웃을 성공하였습니다.")
+                    .version(versionProvider.getVersion())
+                    .build();
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(dto));
-        response.getWriter().flush();
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(dto));
+            response.getWriter().flush();
+        }
+        else {
+            ResponseDto.Error dto = ResponseDto.Error.builder()
+                    .data(null)
+                    .message("로그아웃을 실패하였습니다.")
+                    .version(versionProvider.getVersion())
+                    .build();
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(dto));
+            response.getWriter().flush();
+        }
     }
 }

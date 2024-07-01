@@ -57,4 +57,5 @@ logging:
 jwt:
   # Base64
   secret: ${JWT_SECRET}
-  expiration_time: 3600    # 60분
+  access_expiration_time: 3600        # 60분
+  refresh_expiration_time: 2592000    # 30일
