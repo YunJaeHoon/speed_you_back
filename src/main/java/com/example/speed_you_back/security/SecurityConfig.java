@@ -38,6 +38,7 @@ public class SecurityConfig
                         // 해당 요청은 모든 사용자에게 접근 권한 허용
                         .requestMatchers("/login/**", "/join/**", "/reset-password").permitAll()
                         .requestMatchers("/api/login/**", "/api/join/**", "/api/reset-password").permitAll()
+                        .requestMatchers("/api/refresh-token").permitAll()
                         .requestMatchers("/game/**").permitAll()
                         .requestMatchers("/api/game/**").permitAll()
                         // 해당 요청은 인증된 사용자에게만 접근 권한 허용
@@ -74,18 +75,8 @@ public class SecurityConfig
                 .logout((logout) -> logout
                         .logoutUrl("/api/logout")
                         .logoutSuccessHandler(customLogoutSuccessHandler())
-                        .deleteCookies("remember-me")
                 )
                 .userDetailsService(customUserDetailService);   // 로그인 처리 서비스
-
-        // remember-me 설정
-        httpSecurity
-                .rememberMe((rememberConfig) -> rememberConfig
-                        .key("Test-Key-For-Speed_you")
-                        .tokenValiditySeconds(60 * 60 * 24 * 30)    // 30일
-                        .rememberMeParameter("remember-me")
-                        .userDetailsService(customUserDetailService)
-                );
 
         // 세션 생성 및 사용 정지
         httpSecurity

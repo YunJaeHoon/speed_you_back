@@ -42,10 +42,10 @@ public class JwtAuthFilter extends OncePerRequestFilter
             // JWT 유효성 검증
             if(jwtUtil.validateToken(token))
             {
-                Long userId = jwtUtil.getUserId(token);
-                UserDetails userDetails = customUserDetailService.loadUserByProfileId(userId);
+                Long profile_id = jwtUtil.getProfileId(token);
+                UserDetails userDetails = customUserDetailService.loadUserByProfileId(profile_id);
 
-                Profile profile = profileRepository.findById(userId)
+                Profile profile = profileRepository.findById(profile_id)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));
 
                 String email = profile.getEmail();

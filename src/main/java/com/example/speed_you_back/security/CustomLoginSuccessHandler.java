@@ -3,6 +3,7 @@ package com.example.speed_you_back.security;
 import com.example.speed_you_back.configuration.VersionProvider;
 import com.example.speed_you_back.dto.ProfileDto;
 import com.example.speed_you_back.dto.ResponseDto;
+import com.example.speed_you_back.dto.TokenDto;
 import com.example.speed_you_back.entity.Profile;
 import com.example.speed_you_back.exception.CustomErrorCode;
 import com.example.speed_you_back.exception.CustomException;
@@ -15,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 
+@Component
 @Slf4j
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
 {
@@ -31,7 +35,12 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException
     {
+        // 로그인 이메일
         String email = authentication.getName();
+
+        // body에서 remember-me 값 추출
+        String rememberMeParam = request.getParameter("remember-me");
+        boolean rememberMe = rememberMeParam != null && rememberMeParam.equalsIgnoreCase("true");
 
         Profile profile = profileRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.LOGIN_FAILURE, email));
@@ -46,13 +55,13 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
                 .build();
 
         // access token 발행
-        String accessToken = jwtUtil.createAccessToken(profileDto);
+        TokenDto tokenDto = jwtUtil.returnToken(profileDto, rememberMe);
 
-        // redis에 token 정보 저장
-        redisTemplate.opsForValue().set(email, accessToken);
+        // redis에 access token 정보 저장
+        redisTemplate.opsForValue().set(email, tokenDto.getAccessToken());
 
         ResponseDto.Success dto = ResponseDto.Success.builder()
-                .data(accessToken)
+                .data(tokenDto)
                 .message("로그인을 성공하였습니다.")
                 .version(versionProvider.getVersion())
                 .build();

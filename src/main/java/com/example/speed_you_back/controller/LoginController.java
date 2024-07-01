@@ -5,6 +5,7 @@ import com.example.speed_you_back.dto.EmailDto;
 import com.example.speed_you_back.dto.ProfileDto;
 import com.example.speed_you_back.dto.ResponseDto;
 import com.example.speed_you_back.service.LoginService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +93,22 @@ public class LoginController
                         ResponseDto.Success.builder()
                                 .data(role)
                                 .message("계정 권한 확인이 완료되었습니다.")
+                                .version(versionProvider.getVersion())
+                                .build()
+                );
+    }
+
+    /* access token 재발급 컨트롤러 */
+    @GetMapping("/api/refresh-token")
+    public ResponseEntity<ResponseDto.Success> refreshToken(HttpServletRequest request)
+    {
+        String token = loginService.refreshToken(request);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ResponseDto.Success.builder()
+                                .data(token)
+                                .message("access token 재발급이 완료되었습니다.")
                                 .version(versionProvider.getVersion())
                                 .build()
                 );

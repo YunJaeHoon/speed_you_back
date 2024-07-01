@@ -2,19 +2,27 @@ package com.example.speed_you_back.service;
 
 import com.example.speed_you_back.dto.EmailDto;
 import com.example.speed_you_back.dto.ProfileDto;
+import com.example.speed_you_back.dto.TokenDto;
 import com.example.speed_you_back.entity.Profile;
 import com.example.speed_you_back.entity.Code;
 import com.example.speed_you_back.exception.CustomErrorCode;
 import com.example.speed_you_back.exception.CustomException;
 import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.CodeRepository;
+import com.example.speed_you_back.security.CustomUserDetailService;
+import com.example.speed_you_back.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +40,9 @@ public class LoginService
     @Autowired CodeRepository codeRepository;
     @Autowired BCryptPasswordEncoder encoder;
     @Autowired JavaMailSender javaMailSender;
+    @Autowired JwtUtil jwtUtil;
+    @Autowired CustomUserDetailService customUserDetailService;
+    @Autowired RedisTemplate<String, String> redisTemplate;
 
     /* 회원가입 서비스 */
     @Transactional
@@ -189,5 +200,52 @@ public class LoginService
 
         // 계정이 존재한다면 role 반환
         return profile.getRole();
+    }
+
+    /* access token 재발급 서비스 */
+    public String refreshToken(HttpServletRequest request)
+    {
+        String authorizationHeader = request.getHeader("Authorization");
+
+        // 헤더에 JWT token이 존재하는지 체크
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+        {
+            String token = authorizationHeader.substring(7);
+
+            // JWT 유효성 검증
+            if(jwtUtil.validateToken(token))
+            {
+                Long profile_id = jwtUtil.getProfileId(token);
+                UserDetails userDetails = customUserDetailService.loadUserByProfileId(profile_id);
+
+                Profile profile = profileRepository.findById(profile_id)
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));
+
+                ProfileDto.Profile profileDto = ProfileDto.Profile.builder()
+                        .profile_id(profile.getProfile_id())
+                        .email(profile.getEmail())
+                        .password(profile.getPassword())
+                        .username(profile.getUsername())
+                        .created_at(profile.getCreated_at())
+                        .role(profile.getRole())
+                        .build();
+
+                String email = profile.getEmail();
+
+                if(userDetails != null)
+                {
+                    // access token 발행
+                    TokenDto tokenDto = jwtUtil.returnToken(profileDto, false);
+
+                    // redis에 access token 정보 저장
+                    redisTemplate.opsForValue().set(email, tokenDto.getAccessToken());
+
+                    // access token 반환
+                    return tokenDto.getAccessToken();
+                }
+            }
+        }
+
+        throw new CustomException(CustomErrorCode.TOKEN_NOT_VALID, null);
     }
 }
