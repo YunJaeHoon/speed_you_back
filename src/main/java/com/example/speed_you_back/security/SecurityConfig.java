@@ -25,7 +25,7 @@ public class SecurityConfig
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
-                                                   CustomUserDetailService customUserDetailService) throws Exception
+                                                   CustomUserDetailsService customUserDetailsService) throws Exception
     {
         // 기본 설정
         httpSecurity
@@ -60,7 +60,7 @@ public class SecurityConfig
 
         // UsernamePasswordAuthenticationFilter 앞에 JwtAuthFilter 추가
         httpSecurity
-                .addFilterBefore(new JwtAuthFilter(customUserDetailService, jwtUtil, redisTemplate, profileRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthFilter(customUserDetailsService, jwtUtil, redisTemplate, profileRepository), UsernamePasswordAuthenticationFilter.class);
 
         // 로그인, 로그아웃, 로그인 처리 서비스 설정
         httpSecurity
@@ -76,7 +76,7 @@ public class SecurityConfig
                         .logoutUrl("/api/logout")
                         .logoutSuccessHandler(customLogoutSuccessHandler())
                 )
-                .userDetailsService(customUserDetailService);   // 로그인 처리 서비스
+                .userDetailsService(customUserDetailsService);   // 로그인 처리 서비스
 
         // 세션 생성 및 사용 정지
         httpSecurity

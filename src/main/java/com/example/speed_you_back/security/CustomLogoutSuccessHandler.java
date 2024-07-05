@@ -37,6 +37,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
         // 로그아웃 성공 여부
         boolean isSuccess = false;
 
+        String errorCode = null;
+        String errorMessage = null;
+
         String authorizationHeader = request.getHeader("Authorization");
 
         // 헤더에 access token이 존재하는지 체크
@@ -45,8 +48,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
             String token = authorizationHeader.substring(7);
 
             // access token 유효성 검증
-            if(jwtUtil.validateToken(token))
-            {
+            if(jwtUtil.validateToken(token)) {
                 Long userId = jwtUtil.getProfileId(token);
 
                 Profile profile = profileRepository.findById(userId)
@@ -59,7 +61,19 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
                     isSuccess = true;
                     redisTemplate.delete(email);
                 }
+                else {
+                    errorCode = "EXPIRED_TOKEN";
+                    errorMessage = "이미 만료된 토큰입니다.";
+                }
             }
+            else {
+                errorCode = "INVALID_TOKEN";
+                errorMessage = "유효하지 않은 토큰입니다.";
+            }
+        }
+        else {
+            errorCode = "TOKEN_NOT_FOUND";
+            errorMessage = "헤더에 토큰 정보가 존재하지 않습니다.";
         }
 
         if(isSuccess) {
@@ -76,8 +90,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler
         }
         else {
             ResponseDto.Error dto = ResponseDto.Error.builder()
+                    .code(errorCode)
+                    .message(errorMessage)
                     .data(null)
-                    .message("로그아웃을 실패하였습니다.")
                     .version(versionProvider.getVersion())
                     .build();
 

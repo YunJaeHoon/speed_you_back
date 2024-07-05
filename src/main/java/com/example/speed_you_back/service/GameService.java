@@ -57,15 +57,25 @@ public class GameService
         // 해당 게임의 모든 결과 개수
         Long countAllScores = scoreRepository.countAllScores(game);
 
-        // 해당 게임에서 해당 점수보다 높은 결과 개수
-        Long countLargeScores = scoreRepository.countLargeScores(game, score);
+        if(Objects.equals(game, "Green")) {
+            // 해당 게임에서 해당 점수보다 낮은 결과 개수
+            Long countLittleScores = scoreRepository.countLittleScores(game, score);
 
-        ScoreDto.Result result = ScoreDto.Result.builder()
-                .count_all(countAllScores)
-                .rank(countLargeScores + 1)
-                .percentile(Math.round(((double) (countLargeScores + 1) / countAllScores) * 100))
-                .build();
+            return ScoreDto.Result.builder()
+                    .count_all(countAllScores)
+                    .rank(countLittleScores + 1)
+                    .percentile(Math.round(((double) (countLittleScores + 1) / countAllScores) * 100))
+                    .build();
+        }
+        else {
+            // 해당 게임에서 해당 점수보다 높은 결과 개수
+            Long countLargeScores = scoreRepository.countLargeScores(game, score);
 
-        return result;
+            return ScoreDto.Result.builder()
+                    .count_all(countAllScores)
+                    .rank(countLargeScores + 1)
+                    .percentile(Math.round(((double) (countLargeScores + 1) / countAllScores) * 100))
+                    .build();
+        }
     }
 }

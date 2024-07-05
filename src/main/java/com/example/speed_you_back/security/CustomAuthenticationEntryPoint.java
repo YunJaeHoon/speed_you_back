@@ -23,8 +23,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws ServletException, IOException {
 
         ResponseDto.Error dto = ResponseDto.Error.builder()
-                .data(null)
+                .code("UNAUTHORIZED")
                 .message("권한이 없습니다.")
+                .data(null)
                 .version(versionProvider.getVersion())
                 .build();
 

@@ -54,15 +54,15 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler
                 .role(profile.getRole())
                 .build();
 
-        // access token 발행
+        // token 발행
         TokenDto tokenDto = jwtUtil.returnToken(profileDto, rememberMe);
 
         // redis에 access token 정보 저장
         redisTemplate.opsForValue().set(email, tokenDto.getAccessToken());
 
         ResponseDto.Success dto = ResponseDto.Success.builder()
-                .data(tokenDto)
                 .message("로그인을 성공하였습니다.")
+                .data(tokenDto)
                 .version(versionProvider.getVersion())
                 .build();
 
