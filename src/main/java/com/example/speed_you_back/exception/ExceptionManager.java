@@ -23,8 +23,8 @@ public class ExceptionManager
         return ResponseEntity.status(e.getError_code().getHttpStatus())
                 .body(
                         ResponseDto.Error.builder()
-                                .data(e.getData())
                                 .message(e.getError_code().getMessage())
+                                .data(e.getData())
                                 .version(versionProvider.getVersion())
                                 .build()
                 );
@@ -37,36 +37,24 @@ public class ExceptionManager
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(
                         ResponseDto.Error.builder()
-                                .data(null)
+                                .code("INVALID_DATA")
                                 .message(e.getMessage())
+                                .data(null)
                                 .version(versionProvider.getVersion())
                                 .build()
                 );
     }
 
-    // 이메일 전송 시, 원인 불명으로 발생한 예외 처리
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ResponseDto.Error> runtimeExceptionHandler(RuntimeException e)
+    // 원인 불명으로 발생한 예외 처리
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseDto.Error> unexpectedExceptionHandler(Exception e)
     {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                         ResponseDto.Error.builder()
-                                .data(null)
+                                .code("UNEXPECTED_ERROR")
                                 .message(e.getMessage())
-                                .version(versionProvider.getVersion())
-                                .build()
-                );
-    }
-
-    // 권한이 없는 api에 접근시 예외 처리
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ResponseDto.Error> accessDeniedExceptionHandler(AccessDeniedException e)
-    {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(
-                        ResponseDto.Error.builder()
                                 .data(null)
-                                .message(e.getMessage())
                                 .version(versionProvider.getVersion())
                                 .build()
                 );

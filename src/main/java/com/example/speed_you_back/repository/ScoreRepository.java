@@ -11,4 +11,7 @@ public interface ScoreRepository extends JpaRepository<Score, Long>
 
     @Query(value = "SELECT COUNT(*) FROM score WHERE game = :game AND score > :score", nativeQuery = true)
     Long countLargeScores(String game, double score);
+
+    @Query(value = "SELECT COUNT(*) FROM score WHERE game = :game AND score < :score", nativeQuery = true)
+    Long countLittleScores(String game, double score);
 }

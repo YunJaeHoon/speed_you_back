@@ -12,8 +12,8 @@ public class ResponseDto
     public static class Success
     {
         @Builder.Default private String status = "SUCCESS";
-        private Object data;
         private String message;
+        private Object data;
         private String version;
     }
 
@@ -25,8 +25,9 @@ public class ResponseDto
     public static class Error
     {
         @Builder.Default private String status = "ERROR";
-        private Object data;
+        private String code;
         private String message;
+        private Object data;
         private String version;
     }
 }

@@ -2,6 +2,8 @@ package com.example.speed_you_back.security;
 
 import com.example.speed_you_back.dto.ProfileDto;
 import com.example.speed_you_back.dto.TokenDto;
+import com.example.speed_you_back.exception.CustomErrorCode;
+import com.example.speed_you_back.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -66,7 +68,6 @@ public class JwtUtil
                     .build();
         }
         else {
-
             // refresh token
             String refreshToken = Jwts.builder()
                     .setClaims(claims)

@@ -9,8 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter
 {
-    private final CustomUserDetailService customUserDetailService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, String> redisTemplate;
     private final ProfileRepository profileRepository;
@@ -43,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter
             if(jwtUtil.validateToken(token))
             {
                 Long profile_id = jwtUtil.getProfileId(token);
-                UserDetails userDetails = customUserDetailService.loadUserByProfileId(profile_id);
+                UserDetails userDetails = customUserDetailsService.loadUserByProfileId(profile_id);
 
                 Profile profile = profileRepository.findById(profile_id)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));

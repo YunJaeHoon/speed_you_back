@@ -9,7 +9,7 @@ import com.example.speed_you_back.exception.CustomErrorCode;
 import com.example.speed_you_back.exception.CustomException;
 import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.CodeRepository;
-import com.example.speed_you_back.security.CustomUserDetailService;
+import com.example.speed_you_back.security.CustomUserDetailsService;
 import com.example.speed_you_back.security.JwtUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -41,7 +38,8 @@ public class LoginService
     @Autowired BCryptPasswordEncoder encoder;
     @Autowired JavaMailSender javaMailSender;
     @Autowired JwtUtil jwtUtil;
-    @Autowired CustomUserDetailService customUserDetailService;
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
     @Autowired RedisTemplate<String, String> redisTemplate;
 
     /* 회원가입 서비스 */
@@ -120,10 +118,8 @@ public class LoginService
             // 해당 entity를 code 데이터베이스에 저장
             codeRepository.save(code);
         }
-        catch (CustomException e) {
-            throw new CustomException(CustomErrorCode.EMAIL_NOT_SEND, dto.getEmail());
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
+        catch (Exception error) {
+            throw new RuntimeException(error);
         }
     }
 
@@ -181,10 +177,8 @@ public class LoginService
 
             javaMailSender.send(mimeMessage);
         }
-        catch (CustomException e) {
-            throw new CustomException(CustomErrorCode.EMAIL_NOT_SEND, dto.getEmail());
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
+        catch (Exception error) {
+            throw new RuntimeException(error);
         }
     }
 
@@ -196,7 +190,7 @@ public class LoginService
 
         // 해당 사용자의 계정이 존재하는지 확인
         Profile profile = profileRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(CustomErrorCode.ACCOUNT_NOT_FOUND, null));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, email));
 
         // 계정이 존재한다면 role 반환
         return profile.getRole();
@@ -216,7 +210,7 @@ public class LoginService
             if(jwtUtil.validateToken(token))
             {
                 Long profile_id = jwtUtil.getProfileId(token);
-                UserDetails userDetails = customUserDetailService.loadUserByProfileId(profile_id);
+                UserDetails userDetails = customUserDetailsService.loadUserByProfileId(profile_id);
 
                 Profile profile = profileRepository.findById(profile_id)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));
@@ -246,6 +240,6 @@ public class LoginService
             }
         }
 
-        throw new CustomException(CustomErrorCode.TOKEN_NOT_VALID, null);
+        throw new CustomException(CustomErrorCode.INVALID_TOKEN, null);
     }
 }
