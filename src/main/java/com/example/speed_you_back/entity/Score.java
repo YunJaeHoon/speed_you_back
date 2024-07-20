@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -28,5 +29,5 @@ public class Score
 
     @Column(nullable = false) private String game;
     @Column(nullable = false) private double score;
-    @Column(nullable = false) private LocalDate created_at;
+    @Column(nullable = false) private LocalDateTime created_at;
 }
