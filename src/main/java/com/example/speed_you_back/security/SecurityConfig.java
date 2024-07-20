@@ -39,8 +39,7 @@ public class SecurityConfig
                         .requestMatchers("/login/**", "/join/**", "/reset-password").permitAll()
                         .requestMatchers("/api/login/**", "/api/join/**", "/api/reset-password").permitAll()
                         .requestMatchers("/api/refresh-token").permitAll()
-                        .requestMatchers("/game/**").permitAll()
-                        .requestMatchers("/api/game/**").permitAll()
+                        .requestMatchers("/game/**", "/api/game/**").permitAll()
                         // 해당 요청은 인증된 사용자에게만 접근 권한 허용
                         .requestMatchers("/api/logout").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/get-role").hasAnyRole("ADMIN", "USER")

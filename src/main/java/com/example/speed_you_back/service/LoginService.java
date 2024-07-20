@@ -38,8 +38,7 @@ public class LoginService
     @Autowired BCryptPasswordEncoder encoder;
     @Autowired JavaMailSender javaMailSender;
     @Autowired JwtUtil jwtUtil;
-    @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    @Autowired CustomUserDetailsService customUserDetailsService;
     @Autowired RedisTemplate<String, String> redisTemplate;
 
     /* 회원가입 서비스 */
@@ -77,12 +76,6 @@ public class LoginService
     @Transactional
     public void sendEmail(EmailDto.SendEmail dto)
     {
-        // 이메일 중복 체크
-        profileRepository.findByEmail(dto.getEmail())
-                .ifPresent(nope -> {
-                    throw new CustomException(CustomErrorCode.EMAIL_DUPLICATED, dto.getEmail());
-                });
-
         // 인증번호 생성
         Random random = new Random();
         StringBuilder random_number = new StringBuilder();
@@ -212,22 +205,22 @@ public class LoginService
                 Long profile_id = jwtUtil.getProfileId(token);
                 UserDetails userDetails = customUserDetailsService.loadUserByProfileId(profile_id);
 
-                Profile profile = profileRepository.findById(profile_id)
-                        .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));
-
-                ProfileDto.Profile profileDto = ProfileDto.Profile.builder()
-                        .profile_id(profile.getProfile_id())
-                        .email(profile.getEmail())
-                        .password(profile.getPassword())
-                        .username(profile.getUsername())
-                        .created_at(profile.getCreated_at())
-                        .role(profile.getRole())
-                        .build();
-
-                String email = profile.getEmail();
-
                 if(userDetails != null)
                 {
+                    Profile profile = profileRepository.findById(profile_id)
+                            .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, null));
+
+                    ProfileDto.Profile profileDto = ProfileDto.Profile.builder()
+                            .profile_id(profile.getProfile_id())
+                            .email(profile.getEmail())
+                            .password(profile.getPassword())
+                            .username(profile.getUsername())
+                            .created_at(profile.getCreated_at())
+                            .role(profile.getRole())
+                            .build();
+
+                    String email = profile.getEmail();
+
                     // access token 발행
                     TokenDto tokenDto = jwtUtil.returnToken(profileDto, false);
 

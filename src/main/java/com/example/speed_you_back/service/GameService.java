@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,11 +45,10 @@ public class GameService
                 .profile(profile)
                 .game(dto.getGame())
                 .score(dto.getScore())
-                .created_at(LocalDate.now())
+                .created_at(LocalDateTime.now())
                 .build();
 
         scoreRepository.save(score);
-
     }
 
     /* 결과 확인 서비스 */
@@ -57,8 +57,9 @@ public class GameService
         // 해당 게임의 모든 결과 개수
         Long countAllScores = scoreRepository.countAllScores(game);
 
+        // Green 게임이면 점수가 낮을수록, 높은 순위
+        // 그 외에는 점수가 높을수록, 높은 순위
         if(Objects.equals(game, "Green")) {
-            // 해당 게임에서 해당 점수보다 낮은 결과 개수
             Long countLittleScores = scoreRepository.countLittleScores(game, score);
 
             return ScoreDto.Result.builder()
@@ -68,7 +69,6 @@ public class GameService
                     .build();
         }
         else {
-            // 해당 게임에서 해당 점수보다 높은 결과 개수
             Long countLargeScores = scoreRepository.countLargeScores(game, score);
 
             return ScoreDto.Result.builder()
