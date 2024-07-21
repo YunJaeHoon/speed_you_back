@@ -1,8 +1,11 @@
 package com.example.speed_you_back.repository;
 
+import com.example.speed_you_back.entity.Profile;
 import com.example.speed_you_back.entity.Score;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface ScoreRepository extends JpaRepository<Score, Long>
 {
@@ -11,7 +14,16 @@ public interface ScoreRepository extends JpaRepository<Score, Long>
 
     @Query(value = "SELECT COUNT(*) FROM score WHERE game = :game AND score > :score", nativeQuery = true)
     Long countLargeScores(String game, double score);
-
     @Query(value = "SELECT COUNT(*) FROM score WHERE game = :game AND score < :score", nativeQuery = true)
     Long countLittleScores(String game, double score);
+
+    @Query(value = "SELECT * FROM score WHERE game = :game ORDER BY score DESC LIMIT 10", nativeQuery = true)
+    List<Score> largeTopTen(String game);
+    @Query(value = "SELECT * FROM score WHERE game = :game ORDER BY score ASC LIMIT 10", nativeQuery = true)
+    List<Score> littleTopTen(String game);
+
+    @Query(value = "SELECT score FROM score WHERE game = :game ORDER BY score DESC LIMIT :boundary, 1", nativeQuery = true)
+    Double largeBoundaryScore(String game, Long boundary);
+    @Query(value = "SELECT score FROM score WHERE game = :game ORDER BY score ASC LIMIT :boundary, 1", nativeQuery = true)
+    Double littleBoundaryScore(String game, Long boundary);
 }
