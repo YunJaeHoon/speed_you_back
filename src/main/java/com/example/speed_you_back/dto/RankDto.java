@@ -7,19 +7,35 @@ import lombok.*;
 
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Builder
-@ToString
 public class RankDto
 {
-    @NotBlank(message = "[game] cannot be blank.")
-    private String game;
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    public static class Rank {
+        @NotBlank(message = "[game] cannot be blank.")
+        private String game;
 
-    @NotNull(message = "[top_ten] cannot be null.")
-    private List<ScoreDto.Rank> top_ten;
+        @NotNull(message = "[top_ten] cannot be null.")
+        private List<ScoreDto.Rank> top_ten;
 
-    @NotNull(message = "[boundary] cannot be null.")
-    private List<Double> boundary;
+        @NotNull(message = "[boundary] cannot be null.")
+        private List<RankDto.Boundary> boundary;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    public static class Boundary {
+        @NotBlank(message = "[description] cannot be blank.")
+        private String description;
+
+        @NotNull(message = "[score] cannot be null.")
+        private int score;
+    }
+
 }

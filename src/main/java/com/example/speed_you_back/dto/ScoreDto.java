@@ -26,7 +26,7 @@ public class ScoreDto
         private String game;
 
         @NotNull(message = "[score] cannot be null.")
-        private double score;
+        private int score;
     }
 
     @AllArgsConstructor
@@ -58,11 +58,8 @@ public class ScoreDto
 
         private String username;
 
-        @NotBlank(message = "[game] cannot be blank.")
-        private String game;
-
         @NotNull(message = "[score] cannot be null.")
-        private double score;
+        private int score;
 
         @NotNull(message = "[created_at] cannot be null.")
         private LocalDateTime created_at;
@@ -73,7 +70,6 @@ public class ScoreDto
         return Rank.builder()
                 .score_id(score.getScore_id())
                 .username(score.getProfile() != null ? score.getProfile().getUsername() : null)
-                .game(score.getGame())
                 .score(score.getScore())
                 .created_at(score.getCreated_at())
                 .build();

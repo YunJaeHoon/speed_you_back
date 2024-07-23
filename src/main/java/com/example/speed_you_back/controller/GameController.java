@@ -36,7 +36,7 @@ public class GameController
     /* 결과 확인 컨트롤러 */
     @GetMapping("/api/game/result")
     public ResponseEntity<ResponseDto.Success> result(@RequestParam String game,
-                                                      @RequestParam double score)
+                                                      @RequestParam int score)
     {
         ScoreDto.Result resultDto = gameService.result(game, score);
 

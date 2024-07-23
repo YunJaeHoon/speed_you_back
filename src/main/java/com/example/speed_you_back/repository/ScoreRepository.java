@@ -22,8 +22,8 @@ public interface ScoreRepository extends JpaRepository<Score, Long>
     @Query(value = "SELECT * FROM score WHERE game = :game ORDER BY score ASC LIMIT 10", nativeQuery = true)
     List<Score> littleTopTen(String game);
 
-    @Query(value = "SELECT score FROM score WHERE game = :game ORDER BY score DESC LIMIT :boundary, 1", nativeQuery = true)
-    Double largeBoundaryScore(String game, Long boundary);
     @Query(value = "SELECT score FROM score WHERE game = :game ORDER BY score ASC LIMIT :boundary, 1", nativeQuery = true)
-    Double littleBoundaryScore(String game, Long boundary);
+    Integer largeBoundaryScore(String game, Long boundary);
+    @Query(value = "SELECT score FROM score WHERE game = :game ORDER BY score DESC LIMIT :boundary, 1", nativeQuery = true)
+    Integer littleBoundaryScore(String game, Long boundary);
 }

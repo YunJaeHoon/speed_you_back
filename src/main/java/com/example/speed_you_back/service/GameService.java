@@ -30,9 +30,14 @@ public class GameService
     @Transactional
     public void insertScore(Principal principal, ScoreDto.Insert dto)
     {
-        Profile profile = null;
+        // 점수가 너무 낮다면, 예외 처리
+        if((!Objects.equals(dto.getGame(), "Green") && dto.getScore() <= 0) || (Objects.equals(dto.getGame(), "Green") && dto.getScore() >= 25000))
+        {
+            throw new CustomException(CustomErrorCode.LOW_SCORE, dto.getScore());
+        }
 
         // 로그인 한 사용자라면, 해당 사용자의 계정이 존재하는지 확인
+        Profile profile = null;
         if(principal != null)
         {
             String email = principal.getName();
@@ -52,7 +57,7 @@ public class GameService
     }
 
     /* 결과 확인 서비스 */
-    public ScoreDto.Result result(String game, double score)
+    public ScoreDto.Result result(String game, int score)
     {
         // 해당 게임의 모든 결과 개수
         Long countAllScores = scoreRepository.countAllScores(game);

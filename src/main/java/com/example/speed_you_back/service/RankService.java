@@ -18,8 +18,8 @@ public class RankService
 {
     @Autowired ScoreRepository scoreRepository;
 
-    /* 랭킹 데이터 반환 서비스 */
-    public RankDto getRank(String game)
+    /* 랭킹 데이터 서비스 */
+    public RankDto.Rank getRank(String game)
     {
         // 해당 게임의 모든 결과 개수
         Long countAllScores = scoreRepository.countAllScores(game);
@@ -40,35 +40,74 @@ public class RankService
         ).toList();
 
         // 점수 경계 리스트
-        List<Double> boundary = new ArrayList<>();
-        long count = 0L;
+        List<RankDto.Boundary> boundary = new ArrayList<>();
+        long count = countAllScores / 10;
 
         if(Objects.equals(game, "Green")) {
-            for(int i = 0; i < 10; i++) {
+
+            boundary.add(
+                    RankDto.Boundary.builder()
+                            .description("100%")
+                            .score(25000)
+                            .build()
+            );
+
+            for(int i = 1; i < 10; i++)
+            {
+                int score = scoreRepository.littleBoundaryScore(game, count);
+
                 boundary.add(
-                        scoreRepository.littleBoundaryScore(
-                                game,
-                                count
-                        )
+                        RankDto.Boundary.builder()
+                                .description(100 - (i * 10) + "%")
+                                .score(score)
+                                .build()
                 );
 
                 count = count + (countAllScores / 10) + ((countAllScores % 10) >= (10 - i) ? 1 : 0);
             }
+
+            int top = scoreRepository.littleBoundaryScore(game, countAllScores - 1);
+
+            boundary.add(
+                    RankDto.Boundary.builder()
+                            .description("0%")
+                            .score(top)
+                            .build()
+            );
         }
         else {
-            for(int i = 0; i < 10; i++) {
+            boundary.add(
+                    RankDto.Boundary.builder()
+                            .description("100%")
+                            .score(0)
+                            .build()
+            );
+
+            for(int i = 1; i < 10; i++)
+            {
+                int score = scoreRepository.largeBoundaryScore(game, count);
+
                 boundary.add(
-                        scoreRepository.largeBoundaryScore(
-                                game,
-                                count
-                        )
+                        RankDto.Boundary.builder()
+                                .description(100 - (i * 10) + "%")
+                                .score(score)
+                                .build()
                 );
 
                 count = count + (countAllScores / 10) + ((countAllScores % 10) >= (10 - i) ? 1 : 0);
             }
+
+            int top = scoreRepository.largeBoundaryScore(game, countAllScores - 1);
+
+            boundary.add(
+                    RankDto.Boundary.builder()
+                            .description("0%")
+                            .score(top)
+                            .build()
+            );
         }
 
-        return RankDto.builder()
+        return RankDto.Rank.builder()
                 .game(game)
                 .top_ten(topTenDto)
                 .boundary(boundary)
