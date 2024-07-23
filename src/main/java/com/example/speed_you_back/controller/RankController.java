@@ -17,15 +17,15 @@ public class RankController
     @Autowired RankService rankService;
     @Autowired VersionProvider versionProvider;
 
-    /* 랭킹 데이터 반환 컨트롤러 */
+    /* 랭킹 데이터 컨트롤러 */
     @GetMapping("/api/rank")
     public ResponseEntity<ResponseDto.Success> getRank(@RequestParam String game)
     {
-        RankDto rankDto = rankService.getRank(game);
+        RankDto.Rank data = rankService.getRank(game);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.Success.builder()
-                        .data(rankDto)
+                        .data(data)
                         .message("랭킹 데이터 반환에 성공하였습니다.")
                         .version(versionProvider.getVersion())
                         .build()

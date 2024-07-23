@@ -8,5 +8,5 @@ import lombok.Getter;
 public class CustomException extends RuntimeException
 {
     private CustomErrorCode error_code;
-    private String data;
+    private Object data;
 }

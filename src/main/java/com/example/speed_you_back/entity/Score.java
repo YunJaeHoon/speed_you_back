@@ -28,6 +28,6 @@ public class Score
     private Profile profile;
 
     @Column(nullable = false) private String game;
-    @Column(nullable = false) private double score;
+    @Column(nullable = false) private int score;
     @Column(nullable = false) private LocalDateTime created_at;
 }
