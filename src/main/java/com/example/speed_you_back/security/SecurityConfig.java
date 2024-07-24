@@ -44,6 +44,7 @@ public class SecurityConfig
                         // 해당 요청은 인증된 사용자에게만 접근 권한 허용
                         .requestMatchers("/api/logout").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/get-role").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/mypage/**", "/api/mypage/**").hasAnyRole("ADMIN", "USER")
                         // 해당 요청은 관리자에게만 접근 권한 허용
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

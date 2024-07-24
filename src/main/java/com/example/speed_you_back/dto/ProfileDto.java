@@ -55,4 +55,28 @@ public class ProfileDto
         @NotBlank(message = "[code] cannot be blank.")
         private String code;
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    public static class MyPage
+    {
+        @NotNull(message = "[profile_id] cannot be null.")
+        private Long profile_id;
+
+        @NotBlank(message = "[email] cannot be blank.")
+        @Email(message = "[email] should be email format.")
+        private String email;
+
+        @NotBlank(message = "[username] cannot be blank.")
+        private String username;
+
+        @NotNull(message = "[created_at] cannot be null.")
+        private LocalDate created_at;
+
+        @NotBlank(message = "[role] cannot be blank.")
+        private String role;
+    }
 }
