@@ -47,7 +47,7 @@ public class RankService
 
             boundary.add(
                     RankDto.Boundary.builder()
-                            .description("100%")
+                            .description("")
                             .score(25000)
                             .build()
             );
@@ -78,7 +78,7 @@ public class RankService
         else {
             boundary.add(
                     RankDto.Boundary.builder()
-                            .description("100%")
+                            .description("")
                             .score(0)
                             .build()
             );
