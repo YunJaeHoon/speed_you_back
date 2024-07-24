@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -29,20 +30,34 @@ public interface ScoreRepository extends JpaRepository<Score, Long>
     @Query(value = "SELECT score FROM score WHERE game = :game ORDER BY score DESC LIMIT :boundary, 1", nativeQuery = true)
     Integer littleBoundaryScore(String game, Long boundary);
 
+    @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY score DESC LIMIT 1", nativeQuery = true)
+    Score highestScore(@Param("profile") Long profile, String game);
+    @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY score ASC LIMIT 1", nativeQuery = true)
+    Score lowestScore(@Param("profile") Long profile, String game);
+
     @Query(value = "SELECT * FROM score WHERE profile = :profile ORDER BY created_at DESC, score_id DESC",
             countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
             nativeQuery = true)
-    Page<Score> findByProfileNewest(Profile profile, Pageable pageable);
+    Page<Score> findByProfileAllNewest(@Param("profile") Long profile, Pageable pageable);
     @Query(value = "SELECT * FROM score WHERE profile = :profile ORDER BY created_at ASC, score_id ASC",
             countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
             nativeQuery = true)
-    Page<Score> findByProfileOldest(Profile profile, Pageable pageable);
-    @Query(value = "SELECT * FROM score WHERE profile = :profile ORDER BY score DESC, score_id DESC",
+    Page<Score> findByProfileAllOldest(@Param("profile") Long profile, Pageable pageable);
+
+    @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY created_at DESC, score_id DESC",
             countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
             nativeQuery = true)
-    Page<Score> findByProfileHighest(Profile profile, Pageable pageable);
-    @Query(value = "SELECT * FROM score WHERE profile = :profile ORDER BY score ASC, score_id DESC",
+    Page<Score> findByProfileGameNewest(@Param("profile") Long profile, String game, Pageable pageable);
+    @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY created_at ASC, score_id ASC",
             countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
             nativeQuery = true)
-    Page<Score> findByProfileLowest(Profile profile, Pageable pageable);
+    Page<Score> findByProfileGameOldest(@Param("profile") Long profile, String game, Pageable pageable);
+    @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY score DESC, score_id DESC",
+            countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
+            nativeQuery = true)
+    Page<Score> findByProfileGameHighest(@Param("profile") Long profile, String game, Pageable pageable);
+    @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY score ASC, score_id DESC",
+            countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
+            nativeQuery = true)
+    Page<Score> findByProfileGameLowest(@Param("profile") Long profile, String game, Pageable pageable);
 }

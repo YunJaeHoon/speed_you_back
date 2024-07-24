@@ -65,6 +65,25 @@ public class ScoreDto
         private LocalDateTime created_at;
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    public static class History
+    {
+        private Long score_id;
+
+        @NotBlank(message = "[game] cannot be blank.")
+        private String game;
+
+        private Integer score;
+
+        private Double percentile;
+
+        private LocalDateTime created_at;
+    }
+
     public static ScoreDto.Rank entityToRank(Score score)
     {
         return Rank.builder()
