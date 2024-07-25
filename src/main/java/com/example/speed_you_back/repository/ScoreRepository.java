@@ -45,19 +45,19 @@ public interface ScoreRepository extends JpaRepository<Score, Long>
     Page<Score> findByProfileAllOldest(@Param("profile") Long profile, Pageable pageable);
 
     @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY created_at DESC, score_id DESC",
-            countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
+            countQuery = "SELECT count(*) FROM score WHERE profile = :profile AND game = :game",
             nativeQuery = true)
     Page<Score> findByProfileGameNewest(@Param("profile") Long profile, String game, Pageable pageable);
     @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY created_at ASC, score_id ASC",
-            countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
+            countQuery = "SELECT count(*) FROM score WHERE profile = :profile AND game = :game",
             nativeQuery = true)
     Page<Score> findByProfileGameOldest(@Param("profile") Long profile, String game, Pageable pageable);
     @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY score DESC, score_id DESC",
-            countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
+            countQuery = "SELECT count(*) FROM score WHERE profile = :profile AND game = :game",
             nativeQuery = true)
     Page<Score> findByProfileGameHighest(@Param("profile") Long profile, String game, Pageable pageable);
     @Query(value = "SELECT * FROM score WHERE profile = :profile AND game = :game ORDER BY score ASC, score_id DESC",
-            countQuery = "SELECT count(*) FROM score WHERE profile = :profile",
+            countQuery = "SELECT count(*) FROM score WHERE profile = :profile AND game = :game",
             nativeQuery = true)
     Page<Score> findByProfileGameLowest(@Param("profile") Long profile, String game, Pageable pageable);
 }
