@@ -60,4 +60,9 @@ public interface ScoreRepository extends JpaRepository<Score, Long>
             countQuery = "SELECT count(*) FROM score WHERE profile = :profile AND game = :game",
             nativeQuery = true)
     Page<Score> findByProfileGameLowest(@Param("profile") Long profile, String game, Pageable pageable);
+
+    @Query(value = "SELECT COUNT(*) FROM score WHERE profile = :profile", nativeQuery = true)
+    Long countAllScoresByProfile(Long profile);
+    @Query(value = "SELECT COUNT(*) FROM score WHERE profile = :profile AND game = :game", nativeQuery = true)
+    Long countGameScoresByProfile(Long profile, String game);
 }

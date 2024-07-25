@@ -69,4 +69,19 @@ public class MyPageController
                         .build()
                 );
     }
+
+    /* 게임 전적 개수 컨트롤러 */
+    @GetMapping("/api/mypage/history/count")
+    public ResponseEntity<ResponseDto.Success> historyCount(@RequestParam("game") String game, Principal principal)
+    {
+        Long num = myPageService.historyCount(game, principal);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.Success.builder()
+                        .data(num)
+                        .message("게임 전적 개수 반환에 성공하였습니다.")
+                        .version(versionProvider.getVersion())
+                        .build()
+                );
+    }
 }

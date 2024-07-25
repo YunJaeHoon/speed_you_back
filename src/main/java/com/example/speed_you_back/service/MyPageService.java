@@ -220,4 +220,39 @@ public class MyPageService
         else
             throw new CustomException(CustomErrorCode.INVALID_REQUEST, null);
     }
+
+    /* 게임 전적 개수 서비스 */
+    public Long historyCount(String game, Principal principal)
+    {
+        // 요청을 보낸 사용자의 계정 이메일
+        String email = principal.getName();
+
+        // 해당 사용자의 계정이 존재하는지 확인
+        Profile profile = profileRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, email));
+
+        // 전적 개수
+        Long num = null;
+
+        // game 값이 "All"이면, 모든 게임 전적 개수 반환
+        // 그 외의 game 값은 해당 게임에 대한 전적 개수만 반환
+        if(Objects.equals(game, "All"))
+            num = scoreRepository.countAllScoresByProfile(profile.getProfile_id());
+        else if(
+                Objects.equals(game, "Red") ||
+                Objects.equals(game, "Orange") ||
+                Objects.equals(game, "Yellow") ||
+                Objects.equals(game, "Green") ||
+                Objects.equals(game, "Skyblue") ||
+                Objects.equals(game, "Blue") ||
+                Objects.equals(game, "Purple") ||
+                Objects.equals(game, "Pink") ||
+                Objects.equals(game, "Black")
+        )
+            num = scoreRepository.countGameScoresByProfile(profile.getProfile_id(), game);
+        else
+            throw new CustomException(CustomErrorCode.INVALID_REQUEST, null);
+
+        return num;
+    }
 }
