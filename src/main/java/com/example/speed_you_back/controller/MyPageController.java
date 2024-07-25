@@ -31,7 +31,7 @@ public class MyPageController
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.Success.builder()
                         .data(data)
-                        .message("마이페이지 정보 반환에 성공하였습니다.")
+                        .message("기본 프로필 정보 반환에 성공하였습니다.")
                         .version(versionProvider.getVersion())
                         .build()
                 );
@@ -47,6 +47,24 @@ public class MyPageController
                 .body(ResponseDto.Success.builder()
                         .data(data)
                         .message("게임별 최고 점수 반환에 성공하였습니다.")
+                        .version(versionProvider.getVersion())
+                        .build()
+                );
+    }
+
+    /* 게임 전적 컨트롤러 */
+    @GetMapping("/api/mypage/history")
+    public ResponseEntity<ResponseDto.Success> history(@RequestParam("game") String game,
+                                                       @RequestParam("order") String order,
+                                                       @RequestParam("page") int page,
+                                                       Principal principal)
+    {
+        List<ScoreDto.History> data = myPageService.history(game, order, page - 1, principal);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.Success.builder()
+                        .data(data)
+                        .message("게임 전적 반환에 성공하였습니다.")
                         .version(versionProvider.getVersion())
                         .build()
                 );

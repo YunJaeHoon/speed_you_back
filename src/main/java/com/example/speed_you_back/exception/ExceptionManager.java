@@ -23,6 +23,7 @@ public class ExceptionManager
         return ResponseEntity.status(e.getError_code().getHttpStatus())
                 .body(
                         ResponseDto.Error.builder()
+                                .code(e.getError_code().name())
                                 .message(e.getError_code().getMessage())
                                 .data(e.getData())
                                 .version(versionProvider.getVersion())
