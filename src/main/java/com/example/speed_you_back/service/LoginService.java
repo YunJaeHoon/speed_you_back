@@ -59,6 +59,36 @@ public class LoginService
         if(!Objects.equals(dto.getCode(), actualCode.getCode()))
             throw new CustomException(CustomErrorCode.WRONG_CODE, dto.getEmail());
 
+        // 비밀번호가 8~16자리이고, 숫자와 영문을 포함하는지 체크
+        boolean hasEnglish = false;
+        boolean hasNumber = false;
+
+        for (int i = 0; i < dto.getPassword().length(); i++) {
+            char ch = dto.getPassword().charAt(i);
+            if (Character.isLetter(ch)) {
+                hasEnglish = true;
+            } else if (Character.isDigit(ch)) {
+                hasNumber = true;
+            }
+
+            if (hasEnglish && hasNumber) {
+                break;
+            }
+        }
+
+        if(
+            dto.getPassword().length() < 8 ||
+            dto.getPassword().length() > 16 ||
+            !hasEnglish ||
+            !hasNumber
+        ) {
+            throw new CustomException(CustomErrorCode.INVALID_PASSWORD, dto.getPassword());
+        }
+
+        // 닉네임이 2~16자리인지 체크
+        if(dto.getUsername().length() < 2 || dto.getUsername().length() > 16)
+            throw new CustomException(CustomErrorCode.INVALID_USERNAME, dto.getUsername());
+
         // 엔티티 생성
         Profile profile = Profile.builder()
                 .email(dto.getEmail())

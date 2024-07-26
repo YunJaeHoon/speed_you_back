@@ -8,10 +8,12 @@ import com.example.speed_you_back.exception.CustomErrorCode;
 import com.example.speed_you_back.exception.CustomException;
 import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.ScoreRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -24,6 +26,7 @@ public class MyPageService
 {
     @Autowired ProfileRepository profileRepository;
     @Autowired ScoreRepository scoreRepository;
+    @Autowired BCryptPasswordEncoder encoder;
 
     /* 기본 프로필 정보 서비스 */
     public ProfileDto.MyPage getMyPage(Principal principal)
@@ -254,5 +257,79 @@ public class MyPageService
             throw new CustomException(CustomErrorCode.INVALID_REQUEST, null);
 
         return num;
+    }
+
+    /* 비밀번호 확인 서비스 */
+    public void checkPassword(ProfileDto.CheckPassword dto, Principal principal)
+    {
+        // 요청을 보낸 사용자의 계정 이메일
+        String email = principal.getName();
+
+        // 해당 사용자의 계정이 존재하는지 확인
+        Profile profile = profileRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, email));
+
+        if(!encoder.matches(dto.getPassword(), profile.getPassword()))
+            throw new CustomException(CustomErrorCode.WRONG_PASSWORD, null);
+    }
+
+    /* 기본 프로필 정보 변경 서비스 */
+    @Transactional
+    public void updateBasic(ProfileDto.UpdateBasic dto, Principal principal)
+    {
+        // 요청을 보낸 사용자의 계정 이메일
+        String email = principal.getName();
+
+        // 해당 사용자의 계정이 존재하는지 확인
+        Profile profile = profileRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, email));
+
+        // 닉네임이 2~16자리인지 체크
+        if(dto.getUsername().length() < 2 || dto.getUsername().length() > 16)
+            throw new CustomException(CustomErrorCode.INVALID_USERNAME, dto.getUsername());
+
+        profile.setUsername(dto.getUsername());
+        profileRepository.save(profile);
+    }
+
+    /* 비밀번호 변경 서비스 */
+    @Transactional
+    public void updatePassword(ProfileDto.UpdatePassword dto, Principal principal)
+    {
+        // 요청을 보낸 사용자의 계정 이메일
+        String email = principal.getName();
+
+        // 해당 사용자의 계정이 존재하는지 확인
+        Profile profile = profileRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.EMAIL_NOT_FOUND, email));
+
+        // 비밀번호가 8~16자리이고, 숫자와 영문을 포함하는지 체크
+        boolean hasEnglish = false;
+        boolean hasNumber = false;
+
+        for (int i = 0; i < dto.getPassword().length(); i++) {
+            char ch = dto.getPassword().charAt(i);
+            if (Character.isLetter(ch)) {
+                hasEnglish = true;
+            } else if (Character.isDigit(ch)) {
+                hasNumber = true;
+            }
+
+            if (hasEnglish && hasNumber) {
+                break;
+            }
+        }
+
+        if(
+                dto.getPassword().length() < 8 ||
+                        dto.getPassword().length() > 16 ||
+                        !hasEnglish ||
+                        !hasNumber
+        ) {
+            throw new CustomException(CustomErrorCode.INVALID_PASSWORD, dto.getPassword());
+        }
+
+        profile.setPassword(encoder.encode(dto.getPassword()));
+        profileRepository.save(profile);
     }
 }

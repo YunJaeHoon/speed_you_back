@@ -15,9 +15,12 @@ public enum CustomErrorCode
     WRONG_CODE(HttpStatus.BAD_REQUEST, "인증번호가 틀렸습니다."),
     CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일로 전송된 인증번호가 존재하지 않습니다."),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일로 생성된 계정이 존재하지 않습니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 영문과 숫자를 포함한 8~16자리입니다."),
+    INVALID_USERNAME(HttpStatus.BAD_REQUEST, "닉네임은 2~16자리입니다."),
     LOW_SCORE(HttpStatus.BAD_REQUEST, "점수가 너무 낮습니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 형식이 잘못되었습니다."),
-    NO_RESULT(HttpStatus.NOT_FOUND, "전적 정보가 존재하지 않습니다.");
+    NO_RESULT(HttpStatus.NOT_FOUND, "전적 정보가 존재하지 않습니다."),
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
