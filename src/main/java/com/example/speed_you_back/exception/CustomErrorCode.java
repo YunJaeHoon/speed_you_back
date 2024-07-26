@@ -17,7 +17,8 @@ public enum CustomErrorCode
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일로 생성된 계정이 존재하지 않습니다."),
     LOW_SCORE(HttpStatus.BAD_REQUEST, "점수가 너무 낮습니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 형식이 잘못되었습니다."),
-    NO_RESULT(HttpStatus.NOT_FOUND, "전적 정보가 존재하지 않습니다.");
+    NO_RESULT(HttpStatus.NOT_FOUND, "전적 정보가 존재하지 않습니다."),
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
