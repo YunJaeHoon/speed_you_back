@@ -89,4 +89,26 @@ public class ProfileDto
         @NotBlank(message = "[password] cannot be blank.")
         private String password;
     }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    public static class UpdateBasic
+    {
+        @NotBlank(message = "[username] cannot be blank.")
+        private String username;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Builder
+    @ToString
+    public static class UpdatePassword
+    {
+        @NotBlank(message = "[password] cannot be blank.")
+        private String password;
+    }
 }
