@@ -63,4 +63,19 @@ public class SuggestionController
                         .build()
                 );
     }
+
+    /* 건의사항 개수 컨트롤러 */
+    @GetMapping("/api/suggestion/count")
+    public ResponseEntity<ResponseDto.Success> countSuggestion()
+    {
+        Long number = suggestionService.countSuggestion();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.Success.builder()
+                        .data(number)
+                        .message("건의사항 개수 반환에 성공하였습니다.")
+                        .version(versionProvider.getVersion())
+                        .build()
+                );
+    }
 }

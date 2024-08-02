@@ -49,7 +49,7 @@ public class SecurityConfig
                         // 해당 요청은 관리자에게만 접근 권한 허용
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/suggestion/basic", "/api/suggestion/detail").hasRole("ADMIN")
+                        .requestMatchers("/api/suggestion/basic", "/api/suggestion/detail", "/api/suggestion/count").hasRole("ADMIN")
                         // 그 외의 요청은 인증된 사용자에게만 허용
                         .anyRequest().authenticated()
                 );
