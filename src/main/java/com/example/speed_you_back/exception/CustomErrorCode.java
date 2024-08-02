@@ -20,7 +20,10 @@ public enum CustomErrorCode
     LOW_SCORE(HttpStatus.BAD_REQUEST, "점수가 너무 낮습니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "요청 형식이 잘못되었습니다."),
     NO_RESULT(HttpStatus.NOT_FOUND, "전적 정보가 존재하지 않습니다."),
-    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다.");
+    WRONG_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 틀렸습니다."),
+    INVALID_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 건의사항 종류입니다."),
+    TOO_LONG_DETAIL(HttpStatus.BAD_REQUEST, "건의사항의 세부 내용은 1000자까지 가능합니다."),
+    TOO_MANY_SUGGESTIONS(HttpStatus.FORBIDDEN, "건의사항은 하루에 최소 10개씩 등록 가능합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
