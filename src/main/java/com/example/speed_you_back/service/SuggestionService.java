@@ -10,10 +10,14 @@ import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.SuggestionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -22,6 +26,7 @@ public class SuggestionService
     @Autowired ProfileRepository profileRepository;
     @Autowired SuggestionRepository suggestionRepository;
 
+    /* 건의사항 등록 서비스 */
     @Transactional
     public void insertSuggestion(Principal principal, SuggestionDto.Insert dto)
     {
@@ -35,8 +40,8 @@ public class SuggestionService
         // 건의사항 종류가 형식에 맞지 않으면, 예외 처리
         if(
                 !Objects.equals(dto.getType(), "BUG_REPORT") &&
-                !Objects.equals(dto.getType(), "INQUIRY ") &&
-                !Objects.equals(dto.getType(), "ADVICE ")
+                !Objects.equals(dto.getType(), "INQUIRY") &&
+                !Objects.equals(dto.getType(), "ADVICE")
         )
             throw new CustomException(CustomErrorCode.INVALID_TYPE, dto.getType());
 
@@ -59,5 +64,47 @@ public class SuggestionService
                 .build();
 
         suggestionRepository.save(suggestion);
+    }
+
+    /* 건의사항 간단 조회 서비스 */
+    public List<SuggestionDto.Basic> basicSuggestion(int page)
+    {
+        // Pageable 객체 생성 (size = 10개)
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Suggestion> suggestions = suggestionRepository.suggestionsByPage(pageable);
+
+        if(suggestions.isEmpty())
+            throw new CustomException(CustomErrorCode.NO_RESULT, null);
+
+        List<SuggestionDto.Basic> suggestionDtos = suggestions.stream()
+                .map(suggestion -> {
+                    return SuggestionDto.Basic.builder()
+                            .suggestion_id(suggestion.getSuggestion_id())
+                            .type(suggestion.getType())
+                            .email(suggestion.getProfile().getEmail())
+                            .username(suggestion.getProfile().getUsername())
+                            .created_at(suggestion.getCreated_at())
+                            .build();
+                })
+                .toList();
+
+        return suggestionDtos;
+    }
+
+    /* 건의사항 상세 조회 서비스 */
+    public SuggestionDto.Detail detailSuggestion(Long suggestion_id)
+    {
+        // 해당 건의사항이 존재하는지 확인
+        Suggestion suggestion = suggestionRepository.findById(suggestion_id)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.SUGGESTION_NOT_FOUND, suggestion_id));
+
+        return SuggestionDto.Detail.builder()
+                .suggestion_id(suggestion.getSuggestion_id())
+                .type(suggestion.getType())
+                .detail(suggestion.getDetail())
+                .email(suggestion.getProfile().getEmail())
+                .username(suggestion.getProfile().getUsername())
+                .created_at(suggestion.getCreated_at())
+                .build();
     }
 }
