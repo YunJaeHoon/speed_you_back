@@ -107,4 +107,10 @@ public class SuggestionService
                 .created_at(suggestion.getCreated_at())
                 .build();
     }
+
+    /* 건의사항 개수 서비스 */
+    public Long countSuggestion()
+    {
+        return suggestionRepository.countAllSuggestions();
+    }
 }

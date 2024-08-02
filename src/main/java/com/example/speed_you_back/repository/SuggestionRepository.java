@@ -20,4 +20,8 @@ public interface SuggestionRepository extends JpaRepository<Suggestion, Long>
     // 특정 프로필, 특정 날짜의 Suggestion 개수
     @Query(value = "SELECT count(*) FROM suggestion WHERE profile = :profile AND created_at = :created_at", nativeQuery = true)
     int countByProfileAndCreateAt(@Param("profile") Long profile, @Param("created_at") LocalDate created_at);
+
+    // 모든 Suggestion 개수
+    @Query(value = "SELECT count(*) FROM suggestion", nativeQuery = true)
+    Long countAllSuggestions();
 }
