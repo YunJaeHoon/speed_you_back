@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -118,7 +120,7 @@ public class LoginService
         // 인증번호 발송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            String content = String.format("Speed.you <br> 인증 번호 <br><br> %s", verification_number);
+            String content = String.format(new String(Files.readAllBytes(new ClassPathResource("email/VerificationNumber.txt").getFile().toPath())), verification_number);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
@@ -191,7 +193,7 @@ public class LoginService
         // 임시 비밀번호를 이메일로 전송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            String content = String.format("Speed.you <br> 임시 비밀번호 <br><br> %s", newPassword);
+            String content = String.format(new String(Files.readAllBytes(new ClassPathResource("email/ResetPassword.txt").getFile().toPath())), newPassword);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
