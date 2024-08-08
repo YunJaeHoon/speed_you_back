@@ -9,6 +9,7 @@ import com.example.speed_you_back.exception.CustomException;
 import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.ScoreRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class MyPageService
 {
     @Autowired ProfileRepository profileRepository;
@@ -150,10 +152,10 @@ public class MyPageService
 
                         double percentile;
 
-                        if(!game.equals("Green"))
-                            percentile = (double) Math.round(((double) (scoreRepository.countLargeScores(game, score.getScore()) + 1) / countAllScores) * 100);
+                        if(!score.getGame().equals("Green"))
+                            percentile = (double) Math.round(((double) (scoreRepository.countLargeScores(score.getGame(), score.getScore()) + 1) / countAllScores) * 100);
                         else
-                            percentile = (double) Math.round(((double) (scoreRepository.countLittleScores(game, score.getScore()) + 1) / countAllScores) * 100);
+                            percentile = (double) Math.round(((double) (scoreRepository.countLittleScores(score.getGame(), score.getScore()) + 1) / countAllScores) * 100);
 
                         return ScoreDto.History.builder()
                                 .score_id(score.getScore_id())
