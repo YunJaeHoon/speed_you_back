@@ -23,6 +23,10 @@ jobs:
     environment: production
 
     steps:
+    # (0) 권한 부여
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
+       
     # (1) 기본 체크아웃
     - name: Checkout
       uses: actions/checkout@v4
