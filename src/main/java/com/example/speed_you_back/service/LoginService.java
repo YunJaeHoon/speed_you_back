@@ -11,7 +11,6 @@ import com.example.speed_you_back.repository.ProfileRepository;
 import com.example.speed_you_back.repository.CodeRepository;
 import com.example.speed_you_back.security.CustomUserDetailsService;
 import com.example.speed_you_back.security.JwtUtil;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -25,12 +24,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Scanner;
 
 @Service
 @Slf4j
@@ -43,6 +44,8 @@ public class LoginService
     @Autowired JwtUtil jwtUtil;
     @Autowired CustomUserDetailsService customUserDetailsService;
     @Autowired RedisTemplate<String, String> redisTemplate;
+
+    private final static ClassLoader classLoader = LoginService.class.getClassLoader();
 
     /* 회원가입 서비스 */
     @Transactional
@@ -121,7 +124,10 @@ public class LoginService
         // 인증번호 발송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            String content = String.format(new String(Files.readAllBytes(Paths.get(new ClassPathResource("email/VerificationNumber.txt").getURI()))), verification_number);
+            InputStream inputStream = classLoader.getResourceAsStream("email/VerificationNumber.txt");
+            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
+            String content = scanner.useDelimiter("\\A").next();
+            content = String.format(content, verification_number);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
@@ -194,7 +200,10 @@ public class LoginService
         // 임시 비밀번호를 이메일로 전송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            String content = String.format(new String(Files.readAllBytes(Paths.get(new ClassPathResource("email/ResetPassword.txt").getURI()))), newPassword);
+            InputStream inputStream = classLoader.getResourceAsStream("email/ResetPassword.txt");
+            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
+            String content = scanner.useDelimiter("\\A").next();
+            content = String.format(content, newPassword);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
