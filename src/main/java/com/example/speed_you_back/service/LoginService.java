@@ -26,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -120,7 +121,7 @@ public class LoginService
         // 인증번호 발송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            String content = String.format(new String(Files.readAllBytes(new ClassPathResource("email/VerificationNumber.txt").getFile().toPath())), verification_number);
+            String content = String.format(new String(Files.readAllBytes(Paths.get(new ClassPathResource("email/VerificationNumber.txt").getURI()))), verification_number);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
@@ -193,7 +194,7 @@ public class LoginService
         // 임시 비밀번호를 이메일로 전송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            String content = String.format(new String(Files.readAllBytes(new ClassPathResource("email/ResetPassword.txt").getFile().toPath())), newPassword);
+            String content = String.format(new String(Files.readAllBytes(Paths.get(new ClassPathResource("email/ResetPassword.txt").getURI()))), newPassword);
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
