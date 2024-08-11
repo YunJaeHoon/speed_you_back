@@ -122,10 +122,24 @@ public class LoginService
         // 인증번호 발송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("email/VerificationNumber.txt");
-            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
-            String content = scanner.useDelimiter("\\A").next();
-            content = String.format(content, verification_number);
+            String content = String.format(
+                    """
+                        <div style="width: 95%%; border: 1.61px solid #A2A2A2; border-radius: 12.92px;">
+                            <div style="height: 60px;"></div>
+                            <div style="width: 100%%; text-align: center; height: 10.5vh; display: flex; justify-content: center; align-items: end;">
+                                <span style="width: 100%%; text-align: center; font-size: 36px; font-weight: 600; color: #20201E;">Speed.you</span>
+                            </div>
+                            <div style="height: 34px;"></div>
+                            <div style="width: 100%%; height: 0.62px; background-color: #D4D4D4;"></div>
+                            <div style="height: 90px;"></div>
+                            <div style="width: 100%%; text-align: center; font-size: 48px; font-weight: 600; letter-spacing: 1.2vh; color: #373737;">%s</div>
+                            <div style="height: 48px;"></div>
+                            <div style="width: 100%%; text-align: center; font-size: 19px; font-weight: 400; color: #373737;">본인확인 인증번호를 입력해주세요</div>
+                            <div style="height: 90px;"></div>
+                        </div>
+                    """,
+                    verification_number
+            );
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
@@ -198,10 +212,25 @@ public class LoginService
         // 임시 비밀번호를 이메일로 전송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("email/ResetPassword.txt");
-            Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
-            String content = scanner.useDelimiter("\\A").next();
-            content = String.format(content, newPassword);
+            String content = String.format(
+                    """
+                        <div style="width: 95%%; border: 1.61px solid #A2A2A2; border-radius: 12.92px;">
+                            <div style="height: 60px;"></div>
+                            <div style="width: 100%%; text-align: center; height: 10.5vh; display: flex; justify-content: center; align-items: end;">
+                                <span style="width: 100%%; text-align: center; font-size: 36px; font-weight: 600; color: #20201E;">Speed.you</span>
+                            </div>
+                            <div style="height: 34px;"></div>
+                            <div style="width: 100%%; height: 0.62px; background-color: #D4D4D4;"></div>
+                            <div style="height: 90px;"></div>
+                            <div style="width: 100%%; text-align: center; font-size: 48px; font-weight: 600; color: #373737;">%s</div>
+                            <div style="height: 48px;"></div>
+                            <div style="width: 100%%; text-align: center; font-size: 19px; font-weight: 400; color: #373737;">임시 비밀번호입니다.</div>
+                            <div style="width: 100%%; text-align: center; font-size: 19px; font-weight: 400; color: #373737;">로그인 이후 변경하실 수 있습니다.</div>
+                            <div style="height: 90px;"></div>
+                        </div>
+                    """,
+                    newPassword
+            );
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(dto.getEmail());    // 메일 수신자
