@@ -45,8 +45,6 @@ public class LoginService
     @Autowired CustomUserDetailsService customUserDetailsService;
     @Autowired RedisTemplate<String, String> redisTemplate;
 
-    private final static ClassLoader classLoader = LoginService.class.getClassLoader();
-
     /* 회원가입 서비스 */
     @Transactional
     public void join(ProfileDto.Join dto)
@@ -124,7 +122,7 @@ public class LoginService
         // 인증번호 발송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            InputStream inputStream = classLoader.getResourceAsStream("email/VerificationNumber.txt");
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("email/VerificationNumber.txt");
             Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
             String content = scanner.useDelimiter("\\A").next();
             content = String.format(content, verification_number);
@@ -200,7 +198,7 @@ public class LoginService
         // 임시 비밀번호를 이메일로 전송
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
-            InputStream inputStream = classLoader.getResourceAsStream("email/ResetPassword.txt");
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("email/ResetPassword.txt");
             Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8);
             String content = scanner.useDelimiter("\\A").next();
             content = String.format(content, newPassword);
