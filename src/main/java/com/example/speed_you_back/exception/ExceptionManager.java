@@ -50,7 +50,7 @@ public class ExceptionManager
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseDto.Error> unexpectedExceptionHandler(Exception e)
     {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(
                         ResponseDto.Error.builder()
                                 .code("UNEXPECTED_ERROR")
