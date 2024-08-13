@@ -59,3 +59,8 @@ jwt:
   secret: ${JWT_SECRET}
   access_expiration_time: 3600        # 60분
   refresh_expiration_time: 2592000    # 30일
+
+## 애플리케이션 유휴 제한 시간 설정 (로드 밸런싱 관련 오류 해결)
+server:
+  tomcat:
+    keep-alive-timeout: 700_000 // 70초
