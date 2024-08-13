@@ -1,5 +1,5 @@
 speed_you_back:
-  version: "v1.0.0"
+  version: "v1.0.1"
 
 spring:
 
@@ -63,4 +63,4 @@ jwt:
 ## 애플리케이션 유휴 제한 시간 설정 (로드 밸런싱 관련 오류 해결)
 server:
   tomcat:
-    keep-alive-timeout: 700_000       # 70초
+    keep-alive-timeout: 190_000       # 190초
