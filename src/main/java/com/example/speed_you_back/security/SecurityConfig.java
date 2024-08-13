@@ -36,7 +36,7 @@ public class SecurityConfig
         httpSecurity
                 .authorizeHttpRequests((requests) -> requests
                         // 해당 요청은 모든 사용자에게 접근 권한 허용
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/", "/health-check").permitAll()
                         .requestMatchers("/login/**", "/join/**", "/reset-password").permitAll()
                         .requestMatchers("/api/login/**", "/api/join/**", "/api/reset-password").permitAll()
                         .requestMatchers("/api/refresh-token").permitAll()
