@@ -36,6 +36,7 @@ public class SecurityConfig
         httpSecurity
                 .authorizeHttpRequests((requests) -> requests
                         // 해당 요청은 모든 사용자에게 접근 권한 허용
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/login/**", "/join/**", "/reset-password").permitAll()
                         .requestMatchers("/api/login/**", "/api/join/**", "/api/reset-password").permitAll()
                         .requestMatchers("/api/refresh-token").permitAll()
@@ -50,8 +51,8 @@ public class SecurityConfig
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/suggestion/basic", "/api/suggestion/detail", "/api/suggestion/count").hasRole("ADMIN")
-                        // 그 외의 요청은 인증된 사용자에게만 허용
-                        .anyRequest().authenticated()
+                        // 그 외의 요청은 모든 사용자에게 허용
+                        .anyRequest().permitAll()
                 );
 
         // 예외 처리 설정
