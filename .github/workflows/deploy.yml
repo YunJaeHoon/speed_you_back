@@ -9,9 +9,9 @@ on:
 # 리전, 버킷 이름, CodeDeploy 앱 이름, CodeDeploy 배포 그룹 이름
 env:
   AWS_REGION: ap-northeast-2
-  S3_BUCKET_NAME: speed-you-bucket
-  CODE_DEPLOY_APPLICATION_NAME: speed-you-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: speed-you-codedeploy-deployment-group
+  S3_BUCKET_NAME: speed-you-back-github-actions-s3-bucket
+  CODE_DEPLOY_APPLICATION_NAME: speed-you-back-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: speed-you-back-codedeploy-deployment-group
 
 permissions:
   contents: read
